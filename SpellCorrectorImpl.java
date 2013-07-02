@@ -9,7 +9,7 @@ public class SpellCorrectorImpl implements SpellCorrector {
 
   private Words root;
 
-  SpellCorrectorImpl() {
+  public SpellCorrectorImpl() {
     this.root = new Words();
   }
 

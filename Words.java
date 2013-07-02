@@ -9,8 +9,9 @@ public class Words implements Trie {
   private int numberNodes;
   private int numberWords;
   private int hashCode;
+  private String xml;
 
-  Words() {
+  public Words() {
     root = new WordNode();
     numberNodes = 1;
     numberWords = 0;
@@ -35,14 +36,17 @@ public class Words implements Trie {
         c2 = null;
       if (c2 != null) {
         if (c1.compareTo(c2) == 0) {
-          scanner.count++;
           scanner = scanner.subNodes[iChar];
+          if ( i == length - 1) {
+            scanner.count++;
+          }
         }
       } else {
       //if !exists we need to make it
         WordNode nn = scanner.subNodes[iChar] = new WordNode();
         nn.letter = letter;
-        nn.count++;
+        if (i == length -1)
+          nn.count++;
         nn.prev = scanner;
         //Arrays.sort(scanner.subNodes);
         scanner = nn;
@@ -180,8 +184,26 @@ public class Words implements Trie {
 		return this.numberNodes;
 	}
 	public String toString() { 
-		return "string";
+    WordNode k = root;
+    StringBuilder j = new StringBuilder(this.xml);
+    traverse(k, j);
+    return this.xml;
 	}
+
+  private void traverse(WordNode k, StringBuilder str) {
+    if (k == null) {
+      return;
+    }
+    for (int i = 0; i < 26; i++) {
+      if (k.subNodes[i] != null) {
+        str = str.append(k.letter);
+        if (k.subNodes[i].count > 0) {
+          this.xml = this.xml + "<"+str.toString()+"><"+k.subNodes[i].count+">\n";
+        }
+        traverse(k.subNodes[i],str);
+      }
+    }
+  }
 
 	@Override
 	public int hashCode() { 
