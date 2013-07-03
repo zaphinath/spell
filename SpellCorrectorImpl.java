@@ -15,9 +15,11 @@ public class SpellCorrectorImpl implements SpellCorrector {
 
 	public void useDictionary(String dictionaryFileName) throws IOException {
 		try {
+      root.clearList();
+      this.root = new Words();
 			Scanner sc = new Scanner(new File(dictionaryFileName));
 			while (sc.hasNext()) {
-        root.add(sc.nextLine());
+        root.add(sc.next());
 			}
       sc.close();
 		} catch (FileNotFoundException e) {
@@ -29,11 +31,15 @@ public class SpellCorrectorImpl implements SpellCorrector {
 
 	public String suggestSimilarWord(String inputWord) throws NoSimilarWordFoundException {
     //System.out.println(this.root.getWordCount());
+    root.clearList();
     if (root.find(inputWord) != null) {
       return inputWord;
     } else {
-      return root.filterList(inputWord);  
-      //4 searches
+      String tmp = root.filterList(inputWord); 
+      if (tmp == null)
+        throw new NoSimilarWordFoundException();
+      
+      return tmp;
        
     }
     

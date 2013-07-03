@@ -14,7 +14,7 @@ public class Words implements Trie {
 
   private ArrayList<String> buildList = new ArrayList<String>();
   //private ArrayList<listNode> buildList = new ArrayList<listNode>();
-   
+  
   private class listNode {
     String str;
     int count;
@@ -25,7 +25,10 @@ public class Words implements Trie {
     numberNodes = 1;
     numberWords = 0;
   }
-  
+  public void clearList() {
+    this.buildList.clear();
+  }
+
   public void add(String word) {  
     WordNode scanner = root;
     word = word.toLowerCase();
@@ -154,13 +157,13 @@ public class Words implements Trie {
     for (int i = 0; i < length; i++) {
       s = find(buildList.get(i));
       if (s != null ) {
-        System.out.println(buildList.get(i));
+        //System.out.println(buildList.get(i));
         if (s.getValue() > t.getValue()) {
           shortest = buildList.get(i);
           t = s;
         } else if (s.getValue() == t.getValue()) {
           //s = get(i) && t = shortest
-          if (buildList.get(i).compareTo(shortest) > 0) {
+          if (buildList.get(i).compareTo(shortest) < 0) {
             shortest = buildList.get(i);
           }
         }
