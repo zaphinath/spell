@@ -2,6 +2,7 @@ package spell;
 
 import java.util.Arrays;
 import java.lang.StringBuilder;
+import java.util.ArrayList;
 
 public class Words implements Trie {
 	
@@ -10,6 +11,14 @@ public class Words implements Trie {
   private int numberWords;
   private int hashCode;
   private String xml;
+
+  private ArrayList<String> buildList = new ArrayList<String>();
+  //private ArrayList<listNode> buildList = new ArrayList<listNode>();
+   
+  private class listNode {
+    String str;
+    int count;
+  }
 
   public Words() {
     root = new WordNode();
@@ -84,27 +93,20 @@ public class Words implements Trie {
         return null;
       }
     }
+    if (s.getValue() == 0 )
+      return null;
     return s;
 	}
 
-  protected String findSimilar(String word) {
+  protected void findSimilar(String word) {
     Trie.Node t = new WordNode();
-    word = word.toLowerCase();
-    String shortest = null;
     //Delete Edit
     for (int i = 0; i < word.length(); i++) {
       StringBuilder foo = new StringBuilder(word);
       //System.out.println("Delete");
       Trie.Node s = new WordNode();
       String tmp = foo.deleteCharAt(i).toString();
-      //System.out.println("tmp: "+tmp);
-      s = find(tmp);
-      if (s != null) {
-        if (s.getValue() > t.getValue()) {
-          t = s;
-          shortest = tmp;
-        }
-      }
+      buildList.add(tmp);
     }
     //Transpose
     for (int i = 0; i < word.length() -1; i++) {
@@ -116,32 +118,17 @@ public class Words implements Trie {
       StringBuilder tmp = foo;
       tmp.setCharAt(i, b);
       tmp.setCharAt(i+1,a);
-      s = find(tmp.toString());
-      //System.out.println("tmp: "+tmp.toString());
-      if (s != null) {
-        if (s.getValue() > t.getValue()) {
-          t = s;
-          shortest = tmp.toString();
-        }
-      }
+      buildList.add(tmp.toString());
     }
     //Alteration
-    
-    for (int i = 0; i < word.length()-1; i++) {
+    for (int i = 0; i < word.length(); i++) {
       for (int j = 97; j < 123; j++) {
         StringBuilder foo = new StringBuilder(word);
         Trie.Node s = new WordNode();
         char a = (char) j;
         StringBuilder tmp = foo;
         tmp.setCharAt(i,a);
-        //System.out.println(tmp.toString());
-        s = find(tmp.toString());
-        if (s != null) {
-          if (s.getValue() > t.getValue()) {
-            t = s;
-            shortest = tmp.toString();
-          }
-        }     
+        buildList.add(tmp.toString());
       }
     }
     //Insertion
@@ -152,29 +139,58 @@ public class Words implements Trie {
         char a = (char) j;
         StringBuilder tmp = foo;
         tmp.insert(i,a);
-        s = find(tmp.toString());
-        if (s != null) {
-          if (s.getValue() > t.getValue()) {
-            t = s;
-            shortest = tmp.toString();
+        buildList.add(tmp.toString());
+      }
+    }
+  }
+  protected String filterList(String word) {
+    word = word.toLowerCase();
+    String shortest = null;
+    findSimilar(word);
+    Trie.Node t = new WordNode();
+    Trie.Node s = new WordNode();
+
+    int length = buildList.size();
+    for (int i = 0; i < length; i++) {
+      s = find(buildList.get(i));
+      if (s != null ) {
+        System.out.println(buildList.get(i));
+        if (s.getValue() > t.getValue()) {
+          shortest = buildList.get(i);
+          t = s;
+        } else if (s.getValue() == t.getValue()) {
+          //s = get(i) && t = shortest
+          if (buildList.get(i).compareTo(shortest) > 0) {
+            shortest = buildList.get(i);
           }
-        }     
+        }
+      }
+    }
+    if (shortest == null) {
+      for (int i = 0; i < length; i++) {
+        findSimilar(buildList.get(i));
+      }
+      length = buildList.size();
+      for (int i = 0; i < length; i++) {
+        s = find(buildList.get(i));
+        if (s != null ) {
+          //System.out.println(buildList.get(i));
+          if (s.getValue() > t.getValue()) {
+            shortest = buildList.get(i);
+            t = s;
+          } else if (s.getValue() == t.getValue()) {
+            //s = get(i) && t = shortest
+            if (buildList.get(i).compareTo(shortest) > 0) {
+              shortest = buildList.get(i);
+            }
+          }
+        }
       }
     }
     return shortest;
   }
-  private Trie.Node findTranspose(String word) {
-    WordNode s = new WordNode();
-    return s;
-  }
-   Trie.Node findAlteration(String word) {
-    WordNode s = new WordNode();
-    return s;
-  }
-  public Trie.Node findInsertion(String word) {
-    WordNode s = new WordNode();
-    return s;
-  }
+
+
 
 	public int getWordCount() { 
 		return this.numberWords;

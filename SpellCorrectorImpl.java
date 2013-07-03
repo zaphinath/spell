@@ -32,7 +32,7 @@ public class SpellCorrectorImpl implements SpellCorrector {
     if (root.find(inputWord) != null) {
       return inputWord;
     } else {
-      return root.findSimilar(inputWord);  
+      return root.filterList(inputWord);  
       //4 searches
        
     }
